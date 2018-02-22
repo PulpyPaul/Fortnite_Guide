@@ -9,28 +9,9 @@ const respondJSON = (request, response, status, object) => {
   response.end();
 };
 
-// Used for XML responses
-const respondXML = (request, response, status, content) => {
-  const headers = {
-    'Content-Type': 'text/xml',
-  };
-
-  response.writeHead(status, headers);
-  response.write(content);
-  response.end();
-};
-
 // Creates response based on content type
 const createResponse = (request, response, responseObj, type, status) => {
-  if (type[0] === 'text/xml') {
-    let responseXML = '<response>';
-    responseXML = `${responseXML} <type>${responseObj.type}</type>`;
-    responseXML = `${responseXML} <message>${responseObj.message}</message>`;
-    responseXML = `${responseXML} </response>`;
-    respondXML(request, response, status, responseXML);
-  } else {
-    respondJSON(request, response, status, responseObj);
-  }
+  respondJSON(request, response, status, responseObj);
 };
 
 // Called on a successful request
