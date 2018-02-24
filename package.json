@@ -1,9 +1,12 @@
 {
   "name": "http-api-assignment",
   "version": "1.0.0",
-  "description": "",
+  "description": "Derp",
   "main": "server.js",
   "scripts": {
+    "build": "babel ./client --out-file ./hosted/bundle.js",
+    "watch": "babel --watch ./client --out-file ./hosted/bundle.js",
+    "nodemon": "nodemon --watch ./src ./src/server.js",
     "start": "node ./src/server.js",
     "pretest": "eslint ./src --fix",
     "test": "echo \"Tests complete\""
@@ -19,9 +22,12 @@
   },
   "homepage": "https://github.com/IGM-RichMedia-at-RIT/http-api-assignment#readme",
   "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
     "eslint": "^4.17.0",
     "eslint-config-airbnb": "^16.1.0",
-    "eslint-plugin-import": "^2.8.0"
+    "eslint-plugin-import": "^2.8.0",
+    "nodemon": "^1.15.1"
   },
   "dependencies": {
     "querystring": "^0.2.0"

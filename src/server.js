@@ -11,6 +11,7 @@ const port = process.env.PORT || process.env.NODE_PORT || 3000;
 // Contains all possible url requests
 const urlStruct = {
   '/': htmlHandler.getIndex,
+  '/bundle.js': htmlHandler.getBundle,
   '/style.css': htmlHandler.getCSS,
   '/success': jsonHandler.success,
   '/badRequest': jsonHandler.badRequest,
