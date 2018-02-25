@@ -8,7 +8,12 @@
 <body>
   <section id="top">
     <h3>Fornite Guide</h3>
-    <button id="send">Send</button>
+    <form id="survivalForm" action="/addTip" method="post">
+        <label for="cause">Cause of Death: </label>
+        <input id="causeField" type="text" name="cause"/>
+        <input type="submit" value="Add Tip" />
+    </form>
+    <button id="submit">Submit</button>
   </section>
   <section id="content">
   </section>
