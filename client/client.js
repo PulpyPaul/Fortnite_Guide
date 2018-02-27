@@ -28,10 +28,11 @@ const parseJSON = (xhr, content) => {
     //parse response (obj will be empty in a 204 updated)
     const obj = JSON.parse(xhr.response);
     
-    console.log("should post");
-        
+    console.dir(obj);
+    
     //if users in response, add to screen
     if(obj.gameLogs) {
+        
         const gameLog = document.createElement('p');
         const elements = JSON.stringify(obj.gameLogs);
         gameLog.textContent = elements;

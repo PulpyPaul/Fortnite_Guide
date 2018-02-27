@@ -35,10 +35,11 @@ var parseJSON = function parseJSON(xhr, content) {
   //parse response (obj will be empty in a 204 updated)
   var obj = JSON.parse(xhr.response);
 
-  console.log("should post");
+  console.dir(obj);
 
   //if users in response, add to screen
   if (obj.gameLogs) {
+
     var gameLog = document.createElement('p');
     var elements = JSON.stringify(obj.gameLogs);
     gameLog.textContent = elements;

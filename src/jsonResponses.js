@@ -17,7 +17,7 @@ const respondJSONMeta = (request, response, status) => {
     response.end();
 };
 
-// Returns a response of the 'user' JSON object
+// Returns a response of the game logs
 const getGameLog = (request, response) => {
     const responseJSON = {
       gameLogs,  
@@ -43,6 +43,8 @@ const addGameLog = (request, response, body) => {
     gameLogs[gameNumber].notes = body.notes;
     
     gameIndex++;
+    
+    responseJSON.gameLogs = gameLogs;
     
     if (responseCode === 201) {
         responseJSON.message = 'Created Successfully';
