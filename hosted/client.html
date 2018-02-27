@@ -1,19 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Our simple HTTP server</title>
+  <title>Fornite Game Tracker</title>
   <link rel="stylesheet" type="text/css" href="/style.css">
+  <link type="text/css" rel="stylesheet" href="/materialize.min.css"  media="screen,projection"/>    
   <script src="bundle.js"></script>
+  <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/materialize.min.js"></script>
 </head>
 <body>
   <section id="top">
     <h3>Fornite Guide</h3>
-    <form id="survivalForm" action="/addTip" method="post">
-        <label for="cause">Cause of Death: </label>
-        <input id="causeField" type="text" name="cause"/>
-        <input type="submit" value="Add Tip" />
-    </form>
-    <button id="submit">Submit</button>
+      <div class="row"></div>
+      <form class="cols12" id="survivalForm" action="/sendGameLog" method="post">
+          <div class="row">
+              <div class="input-field col s12">
+                <input placeholder="Enter Name Here" id="nameInput" type="text">
+                <label for="nameInput">Player Name</label>
+              </div>
+          </div>
+          <div class="row">
+            <div class="input-field col s6">
+                <select id="causeSelectElement">
+                    <option disabled selected>Choose your option</option>
+                    <option>Fall Damage</option>
+                    <option>Trap</option>
+                    <option>Sniper</option>
+                    <option>Assault Rifle</option>
+                    <option>Shotgun</option>
+                    <option>Submachine Gun</option>
+                    <option>Rocket Launcher</option>
+                    <option>Grenade Launcher</option>
+                    <option>Crossbow</option>
+                    <option>Pistol</option>
+                </select>
+                <label>Cause of Death</label>
+              </div>
+              <div class="input-field col s6">
+                <select id="surroundingSelectElement">
+                    <option value="field">Open Field</option>
+                    <option value="city">City/Buildings</option>
+                    <option value="hill">Hill Top</option>
+                    <option value="swamp">Swamp/Water</option>
+                </select>
+                <label>Surroundings</label>
+              </div>
+          </div>
+          <div class=row>
+            <div class="input-field col s12">
+                <input placeholder="Enter Notes Here" id="notesElement" type="text">
+                <label for="notesElement">Additional Notes</label>
+              </div>
+          </div>
+          <div class="row">
+            <button type="submit" value="Create Game Log">Create Game Log</button>
+          </div>
+      </form>
   </section>
   <section id="content">
   </section>

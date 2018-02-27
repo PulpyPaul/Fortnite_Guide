@@ -1,5 +1,8 @@
 // Object that will serve as the database or model
-const tips = {};
+const gameLogs = {};
+
+// Index used for tipNumbers
+let gameIndex = 1;
 
 // Used for JSON responses that contain a body
 const respondJSON = (request, response, status, object) => {
@@ -15,32 +18,31 @@ const respondJSONMeta = (request, response, status) => {
 };
 
 // Returns a response of the 'user' JSON object
-const getTips = (request, response) => {
+const getGameLog = (request, response) => {
     const responseJSON = {
-      tips,  
+      gameLogs,  
     };
     
     respondJSON(request, response, 200, responseJSON);
 };
 
-const addTips = (request, response, body) => {
+const addGameLog = (request, response, body) => {
     const responseJSON = {
         message: 'All fields are required',
     };
     
-    if (!body.cause) {
-        responseJSON.id = 'missingParams';
-        return respondJSON(request, response, 400, responseJSON);
-    }
-    
     let responseCode = 201;
     
-    let tipNumber = `tip${Object.keys(tips).length}`;
+    let gameNumber = `gameNumber${gameIndex}`;
+        
+    gameLogs[gameNumber] = {};
+    gameLogs[gameNumber].name = body.name;
+    gameLogs[gameNumber].number = gameIndex;
+    gameLogs[gameNumber].cause = body.cause;
+    gameLogs[gameNumber].surroundings = body.surroundings;
+    gameLogs[gameNumber].notes = body.notes;
     
-    tips[body.tipNumber] = {};
-    tips[body.tipNumber].cause = body.cause;
-    
-    console.dir(tips);
+    gameIndex++;
     
     if (responseCode === 201) {
         responseJSON.message = 'Created Successfully';
@@ -48,9 +50,7 @@ const addTips = (request, response, body) => {
     }
 };
 
-
-
 module.exports = {
-    getTips,
-    addTips,
+    getGameLog,
+    addGameLog,
 };

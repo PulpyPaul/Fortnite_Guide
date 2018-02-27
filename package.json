@@ -30,6 +30,7 @@
     "nodemon": "^1.15.1"
   },
   "dependencies": {
+    "materialize-css": "^0.100.2",
     "querystring": "^0.2.0"
   }
 }

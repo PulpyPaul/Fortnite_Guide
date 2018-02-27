@@ -34,33 +34,42 @@ var parseJSON = function parseJSON(xhr, content) {
 
   //parse response (obj will be empty in a 204 updated)
   var obj = JSON.parse(xhr.response);
-  console.dir(obj);
+
+  console.log("should post");
 
   //if users in response, add to screen
-  if (obj.tips) {
-    var tipsList = document.createElement('p');
-    var tips = JSON.stringify(obj.tips);
-    tipsList.textContent = tips;
-    content.appendChild(tipsList);
+  if (obj.gameLogs) {
+    var gameLog = document.createElement('p');
+    var elements = JSON.stringify(obj.gameLogs);
+    gameLog.textContent = elements;
+    content.appendChild(gameLog);
   }
 };
 
-//function to send our post request
-var sendPost = function sendPost(e, survivalForm) {
+// Sends a post request to server
+var sendPost = function sendPost(e, formObject) {
 
-  //grab the forms action (url to go to)
-  //and method (HTTP method - POST in this case)
-  var causeAction = survivalForm.getAttribute('action');
-  var causeMethod = survivalForm.getAttribute('method');
+  // Gets the form action/method
+  var formAction = formObject.getAttribute('action');
+  var formMethod = formObject.getAttribute('method');
 
-  //grab the form's name and age fields so we can check user input
-  var causeField = survivalForm.querySelector('#causeField');
+  // Gets the cause of death and surroundings dropdown menus
+  var causeDropdown = formObject.querySelector('#causeSelectElement');
+  var surroundingDropdown = formObject.querySelector('#surroundingSelectElement');
 
-  //create a new Ajax request (remember this is asynchronous)
+  // Gets the selected option within the dropdown element
+  var causeField = causeDropdown.options[causeDropdown.selectedIndex].value;
+  var surroundingField = surroundingDropdown.options[surroundingDropdown.selectedIndex].value;
+
+  // Gets the notes and name input fields
+  var nameField = formObject.querySelector('#nameInput').value;
+  var notesField = formObject.querySelector('#notesElement').value;
+
+  //create a new Ajax request
   var xhr = new XMLHttpRequest();
 
   //set the method (POST) and url (action field from form)
-  xhr.open(nameMethod, nameAction);
+  xhr.open(formMethod, formAction);
 
   //set our request type to x-www-form-urlencoded
   //which is one of the common types of form data. 
@@ -84,7 +93,7 @@ var sendPost = function sendPost(e, survivalForm) {
   //So ours might look like  name=test&age=22
   //Again the 'name' fields in the form are the variable names in the string
   //and the variable names the server will look for.
-  var formData = 'cause=' + causeField.value;
+  var formData = 'name=' + nameField + '&cause=' + causeField + '&surroundings=' + surroundingField + '&notes=' + notesField;
 
   //send our request with the data
   xhr.send(formData);
@@ -100,11 +109,15 @@ var init = function init() {
 
   var survivalForm = document.querySelector('#survivalForm');
 
-  var addTip = function addTip(e) {
+  var addGameLog = function addGameLog(e) {
     return sendPost(e, survivalForm);
   };
 
-  survivalForm.addEventListener('submit', addTip);
+  survivalForm.addEventListener('submit', addGameLog);
+
+  $(document).ready(function () {
+    $('select').material_select();
+  });
 };
 
 window.onload = init;

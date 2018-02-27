@@ -25,7 +25,7 @@ const urlStruct = {
 //handle POST requests
 const handlePost = (request, response, parsedUrl) => {
   //if post is to /addUser (our only POST url)
-  if (parsedUrl.pathname === '/addTip') {
+  if (parsedUrl.pathname === '/sendGameLog') {
     const res = response;
 
     //uploads come in as a byte stream that we need 
@@ -57,7 +57,7 @@ const handlePost = (request, response, parsedUrl) => {
       const bodyParams = query.parse(bodyString);
 
       //pass to our addUser function
-      jsonHandler.addTips(request, res, bodyParams);
+      jsonHandler.addGameLog(request, res, bodyParams);
     });
   }
 };
@@ -67,10 +67,14 @@ const handleGet = (request, response, parsedUrl) => {
   //route to correct method based on url
   if (parsedUrl.pathname === '/style.css') {
     htmlHandler.getCSS(request, response);
-  } else if (parsedUrl.pathname === '/getTips') {
-    jsonHandler.getTips(request, response);
+  } else if (parsedUrl.pathname === '/getGameLog') {
+    jsonHandler.getGameLog(request, response);
   } else if (parsedUrl.pathname === '/bundle.js'){
     htmlHandler.getBundle(request, response);
+  } else if (parsedUrl.pathname === '/materialize.min.css'){
+    htmlHandler.getMaterializeCSS(request, response);
+  } else if (parsedUrl.pathname === '/materialize.min.js'){
+    htmlHandler.getMaterializeJS(request, response);
   } else {
     htmlHandler.getIndex(request, response);
   }
