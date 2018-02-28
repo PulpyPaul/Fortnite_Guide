@@ -1,29 +1,29 @@
-'use strict';
+"use strict";
 
 var handleResponse = function handleResponse(xhr) {
-  var content = document.querySelector('#content');
+  var content = document.querySelector('#cards');
 
   //check the status code
   switch (xhr.status) {
     case 200:
       //success
-      content.innerHTML = '<b>Success</b>';
+      Materialize.toast("Success!", 4000);
       break;
     case 201:
       //created
-      content.innerHTML = '<b>Create</b>';
+      Materialize.toast("Created!", 4000);
       break;
     case 204:
-      //updated (no response back from server)
-      content.innerHTML = '<b>Updated (No Content)</b>';
+      //updated 
+      Materialize.toast("Updated!", 4000);
       return;
     case 400:
       //bad request
-      content.innerHTML = '<b>Bad Request</b>';
+      Materialize.toast("Bad Request!", 4000);
       break;
     default:
       //any other status code
-      content.innerHTML = 'Error code not implemented by client.';
+      Materialize.toast("Not Implemented by Client!", 4000);
       break;
   }
 
@@ -32,18 +32,51 @@ var handleResponse = function handleResponse(xhr) {
 
 var parseJSON = function parseJSON(xhr, content) {
 
-  //parse response (obj will be empty in a 204 updated)
+  //parse response 
   var obj = JSON.parse(xhr.response);
 
-  console.dir(obj);
-
   //if users in response, add to screen
-  if (obj.gameLogs) {
+  if (obj.gameLogs && xhr.status == 200) {
 
-    var gameLog = document.createElement('p');
-    var elements = JSON.stringify(obj.gameLogs);
-    gameLog.textContent = elements;
-    content.appendChild(gameLog);
+    // clear out all the elements in the cards div
+    while (content.firstChild) {
+      content.removeChild(content.firstChild);
+    }
+
+    // Create a card for each game log
+    for (var x = 0; x < Object.keys(obj.gameLogs).length; x++) {
+
+      // Creates a new row
+      var row = document.createElement('div');
+      row.className = "row";
+      content.appendChild(row);
+
+      // Creates a container for the card
+      var cardContainer = document.createElement('div');
+      cardContainer.className = "col s12 m6";
+      row.appendChild(cardContainer);
+
+      // Creates the card
+      var card = document.createElement('div');
+      card.className = "card grey darken-2";
+      cardContainer.appendChild(card);
+
+      // Creates the card content
+      var cardContent = document.createElement('div');
+      cardContent.className = "card-content white-text";
+      card.appendChild(cardContent);
+
+      // Creates the card title
+      var cardTitle = document.createElement('span');
+      cardTitle.className = "card-title";
+      cardTitle.textContent = "Name: " + obj.gameLogs["gameNumber" + (x + 1)].name;
+      cardContent.appendChild(cardTitle);
+
+      // Creates the card paragraph
+      var cardParagraph = document.createElement('p');
+      cardParagraph.textContent = "Cause of Death: " + obj.gameLogs["gameNumber" + (x + 1)].cause + "\nSurroundings: " + obj.gameLogs["gameNumber" + (x + 1)].surroundings + "\nAdditional Notes: " + obj.gameLogs["gameNumber" + (x + 1)].notes;
+      cardContent.appendChild(cardParagraph);
+    }
   }
 };
 
@@ -72,9 +105,6 @@ var sendPost = function sendPost(e, formObject) {
   //set the method (POST) and url (action field from form)
   xhr.open(formMethod, formAction);
 
-  //set our request type to x-www-form-urlencoded
-  //which is one of the common types of form data. 
-  //This type has the same format as query strings key=value&key2=value2
   xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 
   //set our requested response type in hopes of a JSON response
@@ -85,16 +115,7 @@ var sendPost = function sendPost(e, formObject) {
     return handleResponse(xhr);
   };
 
-  //build our x-www-form-urlencoded format. Without ajax the 
-  //browser would do this automatically but it forcefully changes pages
-  //which we don't want.
-  //The format is the same as query strings, so key=value&key2=value2
-  //The 'name' fields from the inputs are the variable names sent to
-  //the server. 
-  //So ours might look like  name=test&age=22
-  //Again the 'name' fields in the form are the variable names in the string
-  //and the variable names the server will look for.
-  var formData = 'name=' + nameField + '&cause=' + causeField + '&surroundings=' + surroundingField + '&notes=' + notesField;
+  var formData = "name=" + nameField + "&cause=" + causeField + "&surroundings=" + surroundingField + "&notes=" + notesField;
 
   //send our request with the data
   xhr.send(formData);
@@ -106,16 +127,49 @@ var sendPost = function sendPost(e, formObject) {
   return false;
 };
 
+var sendGet = function sendGet(e, getLogsButton) {
+
+  // Gets action and method
+  var buttonAction = getLogsButton.getAttribute('action');
+  var buttonMethod = getLogsButton.getAttribute('method');
+
+  // Creates and sends proper get request
+  var xhr = new XMLHttpRequest();
+  xhr.open(buttonMethod, buttonAction);
+  xhr.setRequestHeader('Accept', 'application/json');
+  xhr.onload = function () {
+    return handleResponse(xhr);
+  };
+  xhr.send();
+
+  //cancel browser's default action
+  e.preventDefault();
+
+  //return false to prevent page redirection from a form
+  return false;
+};
+
 var init = function init() {
 
+  // Main form on the top of the page
   var survivalForm = document.querySelector('#survivalForm');
 
+  // Button to used to send a get request
+  var getLogsButton = document.querySelector('#showLogs');
+
+  // Event to send a post request to create a game log
   var addGameLog = function addGameLog(e) {
     return sendPost(e, survivalForm);
   };
-
   survivalForm.addEventListener('submit', addGameLog);
 
+  // Event to send a get request to display game logs
+  var showGameLogs = function showGameLogs(e) {
+    return sendGet(e, getLogsButton);
+  };
+  getLogsButton.onclick = showGameLogs;
+
+  // Initialization necessary for materialize select functionality
   $(document).ready(function () {
     $('select').material_select();
   });

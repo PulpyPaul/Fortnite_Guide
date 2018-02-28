@@ -1,22 +1,22 @@
 const handleResponse = (xhr) => {
-    const content = document.querySelector('#content');
+    const content = document.querySelector('#cards');
      
     //check the status code
       switch(xhr.status) {
         case 200: //success
-          content.innerHTML = `<b>Success</b>`;
+          Materialize.toast("Success!", 4000);
           break;
         case 201: //created
-          content.innerHTML = '<b>Create</b>';
+          Materialize.toast("Created!", 4000);
           break;
-        case 204: //updated (no response back from server)
-          content.innerHTML = '<b>Updated (No Content)</b>';
+        case 204: //updated 
+          Materialize.toast("Updated!", 4000);
           return;
         case 400: //bad request
-          content.innerHTML = `<b>Bad Request</b>`;
+          Materialize.toast("Bad Request!", 4000);
           break;
         default: //any other status code
-          content.innerHTML = `Error code not implemented by client.`;
+          Materialize.toast("Not Implemented by Client!", 4000);
           break;
       }
     
@@ -25,19 +25,51 @@ const handleResponse = (xhr) => {
 
 const parseJSON = (xhr, content) => {
       
-    //parse response (obj will be empty in a 204 updated)
+    //parse response 
     const obj = JSON.parse(xhr.response);
     
-    console.dir(obj);
-    
     //if users in response, add to screen
-    if(obj.gameLogs) {
+    if(obj.gameLogs && xhr.status == 200) {
         
-        const gameLog = document.createElement('p');
-        const elements = JSON.stringify(obj.gameLogs);
-        gameLog.textContent = elements;
-        content.appendChild(gameLog);
-       
+        // clear out all the elements in the cards div
+        while (content.firstChild) {
+            content.removeChild(content.firstChild);
+        }
+        
+        // Create a card for each game log
+        for (let x = 0; x < Object.keys(obj.gameLogs).length; x++){
+            
+            // Creates a new row
+            const row = document.createElement('div');
+            row.className = "row";
+            content.appendChild(row);
+            
+            // Creates a container for the card
+            const cardContainer = document.createElement('div');
+            cardContainer.className = "col s12 m6";
+            row.appendChild(cardContainer);
+            
+            // Creates the card
+            const card = document.createElement('div');
+            card.className = "card grey darken-2";
+            cardContainer.appendChild(card);
+            
+            // Creates the card content
+            const cardContent = document.createElement('div');
+            cardContent.className = "card-content white-text";
+            card.appendChild(cardContent);
+            
+            // Creates the card title
+            const cardTitle = document.createElement('span');
+            cardTitle.className = "card-title";
+            cardTitle.textContent = `Name: ${obj.gameLogs[`gameNumber${x+1}`].name}`;
+            cardContent.appendChild(cardTitle);
+            
+            // Creates the card paragraph
+            const cardParagraph = document.createElement('p');
+            cardParagraph.textContent = `Cause of Death: ${obj.gameLogs[`gameNumber${x+1}`].cause}\nSurroundings: ${obj.gameLogs[`gameNumber${x+1}`].surroundings}\nAdditional Notes: ${obj.gameLogs[`gameNumber${x+1}`].notes}`;
+            cardContent.appendChild(cardParagraph);
+        }
     }
 };
 
@@ -66,9 +98,6 @@ const sendPost = (e, formObject) => {
   //set the method (POST) and url (action field from form)
   xhr.open(formMethod, formAction);
   
-  //set our request type to x-www-form-urlencoded
-  //which is one of the common types of form data. 
-  //This type has the same format as query strings key=value&key2=value2
   xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     
   //set our requested response type in hopes of a JSON response
@@ -77,15 +106,6 @@ const sendPost = (e, formObject) => {
   //set our function to handle the response
   xhr.onload = () => handleResponse(xhr);
   
-  //build our x-www-form-urlencoded format. Without ajax the 
-  //browser would do this automatically but it forcefully changes pages
-  //which we don't want.
-  //The format is the same as query strings, so key=value&key2=value2
-  //The 'name' fields from the inputs are the variable names sent to
-  //the server. 
-  //So ours might look like  name=test&age=22
-  //Again the 'name' fields in the form are the variable names in the string
-  //and the variable names the server will look for.
   const formData = `name=${nameField}&cause=${causeField}&surroundings=${surroundingField}&notes=${notesField}`;
   
   //send our request with the data
@@ -98,15 +118,43 @@ const sendPost = (e, formObject) => {
   return false;
 };
 
-     
+const sendGet = (e, getLogsButton) => {
+    
+    // Gets action and method
+    const buttonAction = getLogsButton.getAttribute('action');
+    const buttonMethod = getLogsButton.getAttribute('method');
+    
+    // Creates and sends proper get request
+    const xhr = new XMLHttpRequest();
+    xhr.open(buttonMethod, buttonAction);
+    xhr.setRequestHeader('Accept', 'application/json');
+    xhr.onload = () => handleResponse(xhr);
+    xhr.send();
+      
+    //cancel browser's default action
+    e.preventDefault();
+    
+    //return false to prevent page redirection from a form
+    return false;
+};
+
 const init = () => {
-   
+
+    // Main form on the top of the page
     const survivalForm = document.querySelector('#survivalForm');
     
-    const addGameLog = (e) => sendPost(e, survivalForm);
+    // Button to used to send a get request
+    const getLogsButton = document.querySelector('#showLogs'); 
     
+    // Event to send a post request to create a game log
+    const addGameLog = (e) => sendPost(e, survivalForm);
     survivalForm.addEventListener('submit', addGameLog);
     
+    // Event to send a get request to display game logs
+    const showGameLogs = (e) => sendGet(e, getLogsButton);
+    getLogsButton.onclick = showGameLogs;
+    
+    // Initialization necessary for materialize select functionality
     $(document).ready(function() {
         $('select').material_select();
     });
